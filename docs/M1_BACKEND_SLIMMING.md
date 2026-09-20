@@ -33,6 +33,9 @@ Agent during this test.
 
 ## M1b: Web Terminal
 
+Implementation commit: `1118492e623b559e9669dc85d3e2cc1d7111d43c`.
+Acceptance is determined by the latest full branch CI run containing this commit.
+
 This slice removes the browser terminal without changing the Agent V2
 monitoring or scheduled Ping contracts:
 
