@@ -2,7 +2,9 @@
 
 ## M1a: remote command execution
 
-Status: implemented on `develop/lightweight-v1`, pending CI acceptance.
+Status: accepted on `develop/lightweight-v1` at commit
+`fcf0dc563d403125960dc87069194975921fa1df` by GitHub Actions run
+`35491811532`.
 
 Removed as one dependency slice:
 
