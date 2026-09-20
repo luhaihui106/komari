@@ -132,6 +132,15 @@ removed_exec_route_status=$(curl --silent --output /dev/null --write-out '%{http
   "${server_url}/api/admin/task/exec")
 test "${removed_exec_route_status}" = "404"
 
+for removed_method in admin:getXtermjsSettings admin:setXtermjsSettings; do
+  removed_xterm_response=$(curl --silent --show-error --fail \
+    --cookie "${cookie_jar}" \
+    --header 'Content-Type: application/json' \
+    --data "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"${removed_method}\",\"params\":{}}" \
+    "${server_url}/api/rpc2")
+  jq --exit-status '.error.code == -32601' <<<"${removed_xterm_response}" >/dev/null
+done
+
 node_response=$(curl --silent --show-error --fail \
   --cookie "${cookie_jar}" \
   --header 'Content-Type: application/json' \

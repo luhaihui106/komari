@@ -13,7 +13,6 @@ const (
 	MethodAgentPing       = "agent.ping"
 	MethodAgentMessage    = "agent.message"
 	MethodAgentEvent      = "agent.event"
-	MethodAgentTerminal   = "agent.terminal.request"
 	MethodAgentPull       = "agent.pull"
 	MethodAgentFile       = "agent.file"
 	MethodAgentFileResult = "agent.file.result"
@@ -162,10 +161,6 @@ type MessageParams struct {
 type EventParams struct {
 	Type string `json:"type"`
 	Data any    `json:"data,omitempty"`
-}
-
-type TerminalRequestParams struct {
-	RequestID string `json:"request_id"`
 }
 
 // FileOperation is metadata-only. File contents travel through the dedicated

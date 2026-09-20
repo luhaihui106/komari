@@ -39,6 +39,9 @@ jobs:
       - name: Run Go tests
         run: go test ./...
 
+      - name: Verify removed control surfaces
+        run: bash scripts/ci/removed-control-surfaces.sh
+
       - name: Install musl toolchain
         run: |
           sudo apt-get update

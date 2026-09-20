@@ -30,3 +30,27 @@ Retained and regression-tested:
 The CI acceptance test calls both the former REST route and `admin:exec` RPC
 method and requires them to be unavailable. No shell command is sent to an
 Agent during this test.
+
+## M1b: Web Terminal
+
+This slice removes the browser terminal without changing the Agent V2
+monitoring or scheduled Ping contracts:
+
+- browser and Agent terminal WebSocket routes;
+- terminal session forwarding and reconnection state;
+- the `agent.terminal.request` event and its protocol payload;
+- xterm.js administration methods, routes, settings code, and tests;
+- terminal-specific static frontend routing and README screenshots.
+
+The generic Agent V2 event queue remains because scheduled Ping and file
+transfer still use it. File transfer routes and `agent.file` are intentionally
+retained for the next independently tested M1 slice.
+
+Existing `xtermjs_settings` rows in upgraded databases are left inert. They are
+not exposed or read, and can be removed later through a versioned cleanup
+migration after the backup and rollback policy is established.
+
+Acceptance requires source-level absence checks for terminal symbols and
+routes, method-not-found responses for both former xterm.js RPC methods, the
+full Go test suite, the pinned official Agent V2 report test, and Docker restart
+and reconnect coverage.
