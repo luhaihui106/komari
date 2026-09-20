@@ -1,10 +1,13 @@
 package utils
 
 var (
-	// CurrentVersion is the independent version line of this lightweight fork.
-	// Release workflows may override it with -ldflags.
-	CurrentVersion = "0.1.0"
+	// CurrentVersion keeps the upstream compatibility version used by legacy
+	// version checks. Existing release workflows may override it with -ldflags.
+	CurrentVersion = "0.0.1"
 	VersionHash    = "unknown"
+
+	// ForkVersion is the independent version line of this lightweight fork.
+	ForkVersion = "0.1.0"
 
 	// Edition distinguishes this fork from the archived upstream distribution.
 	Edition = "lightweight-dev"

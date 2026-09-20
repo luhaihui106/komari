@@ -9,6 +9,7 @@
 | Upstream | `komari-monitor/komari` |
 | Upstream branch | `main` |
 | Upstream commit | `0ca87aafd184ed75f9030ede0902772142af5eec` |
+| Upstream compatibility version | `0.0.1` |
 | Fork version line | `0.1.0` |
 | Edition | `lightweight-dev` |
 | Go version declared by the module | `1.25.0` |

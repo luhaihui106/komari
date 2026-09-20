@@ -6,8 +6,8 @@ import (
 )
 
 func TestForkBuildIdentity(t *testing.T) {
-	if matched, _ := regexp.MatchString(`^\d+\.\d+\.\d+$`, CurrentVersion); !matched {
-		t.Fatalf("CurrentVersion %q must be numeric semver for compatibility checks", CurrentVersion)
+	if matched, _ := regexp.MatchString(`^\d+\.\d+\.\d+$`, ForkVersion); !matched {
+		t.Fatalf("ForkVersion %q must be numeric semver", ForkVersion)
 	}
 	if Edition == "" {
 		t.Fatal("Edition must not be empty")

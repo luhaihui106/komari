@@ -706,6 +706,10 @@ func fsMode(value goja.Value, fallback os.FileMode) os.FileMode {
 		if err == nil {
 			return os.FileMode(mode)
 		}
+		// Node.js writeFile/writeFileSync accept a string encoding (for example
+		// "utf8") in the options position. It is not a file mode; retain the
+		// default permission instead of converting it to mode 000.
+		return fallback
 	}
 	return os.FileMode(value.ToInteger())
 }

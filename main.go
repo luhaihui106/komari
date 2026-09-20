@@ -17,8 +17,9 @@ func main() {
 
 	logger.Infof(
 		"server",
-		"Komari Monitor %s (edition: %s, upstream: %s, hash: %s)",
+		"Komari Monitor upstream %s (fork: %s, edition: %s, upstream commit: %s, hash: %s)",
 		utils.CurrentVersion,
+		utils.ForkVersion,
 		utils.Edition,
 		utils.UpstreamCommit,
 		utils.VersionHash,
