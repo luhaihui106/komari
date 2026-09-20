@@ -299,10 +299,15 @@ func (m *Module) spawnChild(vm *goja.Runtime, command string, arguments []string
 		return vm.ToValue(false)
 	})
 
-	m.pipeChildOutput(vm, stdoutReader, stdout, options.encoding)
-	m.pipeChildOutput(vm, stderrReader, stderr, options.encoding)
+	stdoutDone := m.pipeChildOutput(vm, stdoutReader, stdout, options.encoding)
+	stderrDone := m.pipeChildOutput(vm, stderrReader, stderr, options.encoding)
 	go func() {
 		err := cmd.Wait()
+		// Node's close event is emitted only after the process has exited and all
+		// stdio streams have closed. Waiting here also guarantees that the final
+		// data callbacks have run before consumers handle close.
+		<-stdoutDone
+		<-stderrDone
 		cancel()
 		m.runtime.RemoveResource(resourceID)
 		exitCode := 0
@@ -414,13 +419,15 @@ func childCallback(call goja.FunctionCall) goja.Callable {
 	return nil
 }
 
-func (m *Module) pipeChildOutput(vm *goja.Runtime, reader io.Reader, stream *goja.Object, encoding string) {
+func (m *Module) pipeChildOutput(vm *goja.Runtime, reader io.Reader, stream *goja.Object, encoding string) <-chan struct{} {
 	push, _ := goja.AssertFunction(stream.Get("push"))
 	setEncoding, _ := goja.AssertFunction(stream.Get("setEncoding"))
 	if encoding != "" && setEncoding != nil {
 		_, _ = setEncoding(stream, vm.ToValue(encoding))
 	}
+	done := make(chan struct{})
 	go func() {
+		defer close(done)
 		data := make([]byte, 32*1024)
 		for {
 			count, err := reader.Read(data)
@@ -439,16 +446,22 @@ func (m *Module) pipeChildOutput(vm *goja.Runtime, reader io.Reader, stream *goj
 				<-delivered
 			}
 			if err != nil {
-				m.runtime.RunOnLoop(func(vm *goja.Runtime) {
+				delivered := make(chan struct{})
+				if !m.runtime.RunOnLoop(func(vm *goja.Runtime) {
+					defer close(delivered)
 					_ = m.runtime.RunJob(vm, "child_process stream close", func() error {
 						_, pushErr := push(stream, goja.Null())
 						return pushErr
 					})
-				})
+				}) {
+					return
+				}
+				<-delivered
 				return
 			}
 		}
 	}()
+	return done
 }
 
 func (m *Module) execChild(vm *goja.Runtime, command string, arguments []string, options childCommandOptions, callback goja.Callable) *goja.Object {
