@@ -115,7 +115,7 @@ handler 退化为薄适配层：解析 gin 参数 → 调 RPC → 把响应映�
 | --- | --- |
 | `admin` | client CRUD、ping task、session/settings/weight、notification（load/offline/traffic）、clipboard、provider（messageSender/oidc）、system（logs/cloudflared/test） |
 | `public` | getMe、getNodesInformation、getPublicSettings、getVersion、getClientRecentRecords、getRecordsByUUID、getPingRecords、getPublicPingTasks、recordVisitorEvent |
-| Agent v2 | `agent.report`、`agent.basicInfo`、`agent.pingResult`、`agent.pull`、`agent.file`、`agent.file.result`（`/api/clients/v2/rpc`） |
+| Agent v2 | `agent.report`、`agent.basicInfo`、`agent.pingResult`、`agent.pull`（`/api/clients/v2/rpc`） |
 
 ### 声明式路由桥 `Bind`
 
@@ -135,7 +135,7 @@ r.GET("/api/admin/client/:uuid", jsonRpc.Bind("admin:getClient", jsonRpc.WithPat
 
 ### 保留为 REST 的接口（不走 RPC 桥）
 
-二进制/流/重定向/特殊鉴权类，集中在 `web/api/admin`（2fa/theme/backup/update/oauth 绑定）、
+二进制/流/重定向/特殊鉴权类，集中在 `web/api/admin`（2fa/theme/backup/restore/update/oauth 绑定）、
 `web/api/public`（login/logout/oauth/plugin）、`web/api/client`（v2 RPC、AutoDiscovery 注册）。
 
 agent v2 上报的核心逻辑统一在 `web/api/client/ingest.go`。

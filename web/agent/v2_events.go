@@ -13,12 +13,7 @@ import (
 
 const (
 	v2EventQueueLimit = 128
-	v2EventTTL        = 5 * time.Minute
 	v2PingEventTTL    = 3 * time.Second
-	// File operations may include a remote read/search with a 90 second
-	// deadline, so queued file commands need a little headroom while an agent
-	// reconnects.
-	v2FileEventTTL = 2 * time.Minute
 )
 
 type v2EventQueue struct {
@@ -40,20 +35,6 @@ func getV2EventQueueLocked(uuid string) *v2EventQueue {
 	return q
 }
 
-func DispatchV2Event(uuid, method string, params any) bool {
-	if conn := GetConnectedClients()[uuid]; conn != nil {
-		payload := v2.Request{JSONRPC: v2.Version, Method: method, Params: params}
-		if conn.WriteJSON(payload) == nil {
-			return true
-		}
-	}
-	if !IsV2Client(uuid) {
-		return false
-	}
-	EnqueueV2Event(uuid, method, params)
-	return true
-}
-
 func DispatchPing(uuid string, params v2.PingParams) bool {
 	if conn := GetConnectedClients()[uuid]; conn != nil {
 		payload := v2.Request{JSONRPC: v2.Version, Method: v2.MethodAgentPing, Params: params}
@@ -64,7 +45,7 @@ func DispatchPing(uuid string, params v2.PingParams) bool {
 	if !IsV2Client(uuid) {
 		return false
 	}
-	EnqueueV2Event(uuid, v2.MethodAgentPing, params)
+	enqueuePingEvent(uuid, params)
 	return true
 }
 
@@ -75,20 +56,14 @@ func IsAgentOnline(uuid string) bool {
 	return IsV2Client(uuid)
 }
 
-func EnqueueV2Event(uuid, method string, params any) v2.Event {
+func enqueuePingEvent(uuid string, params v2.PingParams) v2.Event {
 	now := time.Now().UTC()
-	ttl := v2EventTTL
-	if method == v2.MethodAgentPing {
-		ttl = v2PingEventTTL
-	} else if method == v2.MethodAgentFile {
-		ttl = v2FileEventTTL
-	}
 	event := v2.Event{
 		ID:        newV2EventID(),
-		Method:    method,
+		Method:    v2.MethodAgentPing,
 		Params:    params,
 		CreatedAt: now,
-		ExpiresAt: now.Add(ttl),
+		ExpiresAt: now.Add(v2PingEventTTL),
 	}
 
 	v2EventMu.Lock()

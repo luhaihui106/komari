@@ -141,6 +141,13 @@ for removed_method in admin:getXtermjsSettings admin:setXtermjsSettings; do
   jq --exit-status '.error.code == -32601' <<<"${removed_xterm_response}" >/dev/null
 done
 
+removed_file_rpc_response=$(curl --silent --show-error --fail \
+  --cookie "${cookie_jar}" \
+  --header 'Content-Type: application/json' \
+  --data '{"jsonrpc":"2.0","id":1,"method":"admin:fileList","params":{"uuid":"disabled","path":"/"}}' \
+  "${server_url}/api/rpc2")
+jq --exit-status '.error.code == -32601' <<<"${removed_file_rpc_response}" >/dev/null
+
 node_response=$(curl --silent --show-error --fail \
   --cookie "${cookie_jar}" \
   --header 'Content-Type: application/json' \
@@ -148,6 +155,18 @@ node_response=$(curl --silent --show-error --fail \
   "${server_url}/api/admin/client/add")
 node_uuid=$(jq --exit-status --raw-output '.uuid | select(length > 0)' <<<"${node_response}")
 agent_token=$(jq --exit-status --raw-output '.token | select(length > 0)' <<<"${node_response}")
+
+removed_file_route_status=$(curl --silent --output /dev/null --write-out '%{http_code}' \
+  --cookie "${cookie_jar}" \
+  --request POST \
+  "${server_url}/api/admin/client/${node_uuid}/file/upload")
+test "${removed_file_route_status}" = "404"
+
+removed_agent_file_response=$(curl --silent --show-error \
+  --header 'Content-Type: application/json' \
+  --data '{"jsonrpc":"2.0","id":1,"method":"agent.file.result","params":{"request_id":"disabled","ok":true}}' \
+  "${server_url}/api/clients/v2/rpc?token=${agent_token}")
+jq --exit-status '.error.code == -32601' <<<"${removed_agent_file_response}" >/dev/null
 
 "${agent_binary}" \
   --endpoint "${server_url}" \

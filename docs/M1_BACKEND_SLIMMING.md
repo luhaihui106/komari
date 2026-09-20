@@ -57,3 +57,26 @@ Acceptance requires source-level absence checks for terminal symbols and
 routes, method-not-found responses for both former xterm.js RPC methods, the
 full Go test suite, the pinned official Agent V2 report test, and Docker restart
 and reconnect coverage.
+
+## M1c: remote node file management
+
+This slice removes remote filesystem access from both the panel and Agent V2:
+
+- public preview downloads and short-lived preview tokens;
+- administrator upload, download, list, search, metadata, permission, copy,
+  move, create-directory, and delete operations against node files;
+- Agent raw transfer streams, transfer state, and file-result ingestion;
+- `agent.file` and `agent.file.result` protocol messages;
+- the generic server-to-Agent event dispatcher that existed only for remote
+  file operations.
+
+The Ping-specific dispatcher and event queue remain. Database backup download
+and archive restore upload routes are separately implemented and are explicitly
+retained. The pinned official Agent may still advertise file capabilities, but
+the server no longer exposes or accepts the associated methods.
+
+Acceptance requires source-level absence checks for the removed RPC methods,
+protocol symbols, package imports, and routes; source-level presence checks for
+backup and restore routes; method-not-found responses for the former panel and
+Agent methods; the full Go test suite; and the existing Agent V2 and Docker
+persistence integration test.
