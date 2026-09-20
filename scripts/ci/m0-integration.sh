@@ -51,6 +51,20 @@ wait_for_http() {
   return 1
 }
 
+wait_for_ping() {
+  local attempts=${1:-60}
+  local response
+  for ((attempt = 1; attempt <= attempts; attempt++)); do
+    response=$(curl --silent --show-error --fail "${server_url}/ping" 2>/dev/null || true)
+    if [[ "${response}" == "pong" ]]; then
+      return 0
+    fi
+    sleep 1
+  done
+  echo "Timed out waiting for the normal application router" >&2
+  return 1
+}
+
 wait_for_agent_report() {
   local node_uuid=$1
   local attempts=${2:-60}
@@ -101,7 +115,7 @@ curl --silent --show-error --fail \
   "${server_url}/api/install/complete" \
   | jq --exit-status '.status == "success"' >/dev/null
 
-wait_for_http "${server_url}/ping" 60 1 | grep -Fxq 'pong'
+wait_for_ping 60
 login_admin
 
 node_response=$(curl --silent --show-error --fail \
@@ -131,7 +145,7 @@ jq --exit-status --arg uuid "${node_uuid}" \
   <<<"${client_response}" >/dev/null
 
 docker restart "${server_name}" >/dev/null
-wait_for_http "${server_url}/ping" 90 1 | grep -Fxq 'pong'
+wait_for_ping 90
 login_admin
 wait_for_agent_report "${node_uuid}" 90
 
