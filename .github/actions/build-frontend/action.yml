@@ -38,7 +38,10 @@ runs:
         set -euxo pipefail
         rm -rf komari-web
         if [ -n "${{ inputs.ref }}" ]; then
-          git clone --depth=1 --branch "${{ inputs.ref }}" "${{ inputs.repository }}" komari-web
+          git init komari-web
+          git -C komari-web remote add origin "${{ inputs.repository }}"
+          git -C komari-web fetch --depth=1 origin "${{ inputs.ref }}"
+          git -C komari-web checkout --detach FETCH_HEAD
         else
           git clone --depth=1 "${{ inputs.repository }}" komari-web
         fi

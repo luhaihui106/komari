@@ -1,5 +1,8 @@
 # Komari
 
+> [!IMPORTANT]
+> This repository is an independent lightweight fork under active development. Its fixed upstream server baseline is `0ca87aafd184ed75f9030ede0902772142af5eec`. It is not yet intended for production deployment. See [FORK_NOTICE.md](./FORK_NOTICE.md) for provenance, licensing, and frontend-transition constraints.
+
 ![Badge](https://hitscounter.dev/api/hit?url=https%3A%2F%2Fgithub.com%2Fkomari-monitor%2Fkomari&label=&icon=github&color=%23a370f7&message=&style=flat&tz=UTC)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/komari-monitor/komari)
 

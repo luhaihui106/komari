@@ -15,7 +15,14 @@ func main() {
 		logger.Setup(slog.LevelInfo)
 	}
 
-	logger.Infof("server", "Komari Monitor %s (hash: %s)", utils.CurrentVersion, utils.VersionHash)
+	logger.Infof(
+		"server",
+		"Komari Monitor %s (edition: %s, upstream: %s, hash: %s)",
+		utils.CurrentVersion,
+		utils.Edition,
+		utils.UpstreamCommit,
+		utils.VersionHash,
+	)
 
 	cmd.Execute()
 }

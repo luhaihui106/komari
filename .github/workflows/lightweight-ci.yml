@@ -1,0 +1,61 @@
+name: Lightweight Baseline CI
+
+on:
+  push:
+    branches:
+      - develop/lightweight-v1
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lightweight-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-build-docker:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Build pinned compatibility frontend
+        uses: ./.github/actions/build-frontend
+        with:
+          ref: 3324844cfa347f18c83435f1ccf5634df7e5b768
+
+      - name: Set up Go from go.mod
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Run Go tests
+        run: go test ./...
+
+      - name: Build Linux amd64 binary
+        env:
+          CGO_ENABLED: 1
+          GOOS: linux
+          GOARCH: amd64
+        run: |
+          go build -trimpath \
+            -ldflags="-s -w -X github.com/komari-monitor/komari/utils.CurrentVersion=0.1.0 -X github.com/komari-monitor/komari/utils.Edition=lightweight-ci -X github.com/komari-monitor/komari/utils.VersionHash=${GITHUB_SHA}" \
+            -o komari-linux-amd64 .
+          ./komari-linux-amd64 --help
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            --build-arg TARGETOS=linux \
+            --build-arg TARGETARCH=amd64 \
+            --tag komari-lightweight:m0 .
+
+      - name: Verify container command
+        run: docker run --rm komari-lightweight:m0 /app/komari --help

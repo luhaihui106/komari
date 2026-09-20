@@ -81,8 +81,10 @@ func publicGetPublicSettings(ctx context.Context, _ *rpc.JsonRpcRequest) (any, *
 
 func publicGetVersion(_ context.Context, _ *rpc.JsonRpcRequest) (any, *rpc.JsonRpcError) {
 	return map[string]any{
-		"version": utils.CurrentVersion,
-		"hash":    utils.VersionHash,
+		"version":         utils.CurrentVersion,
+		"hash":            utils.VersionHash,
+		"edition":         utils.Edition,
+		"upstream_commit": utils.UpstreamCommit,
 	}, nil
 }
 

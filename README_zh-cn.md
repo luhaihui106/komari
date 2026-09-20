@@ -1,5 +1,8 @@
 # Komari
 
+> [!IMPORTANT]
+> 本仓库为正在开发中的独立轻量化 Fork，固定的官方服务端基线为 `0ca87aafd184ed75f9030ede0902772142af5eec`，当前阶段暂不用于生产部署。来源、许可及前端过渡约束见 [FORK_NOTICE.md](./FORK_NOTICE.md)。
+
 ![Badge](https://hitscounter.dev/api/hit?url=https%3A%2F%2Fgithub.com%2Fkomari-monitor%2Fkomari&label=&icon=github&color=%23a370f7&message=&style=flat&tz=UTC)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/komari-monitor/komari)
 
