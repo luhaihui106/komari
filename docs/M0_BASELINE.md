@@ -55,7 +55,7 @@ keys. It establishes a reproducible reference point before functional removal.
 The `Lightweight Baseline CI` workflow must pass before M1 begins. It performs:
 
 - full Go test suite;
-- Linux amd64 server build;
+- statically linked Linux amd64 server build using musl;
 - binary startup/help check;
 - Docker image build;
 - container startup/help check.
