@@ -118,6 +118,20 @@ curl --silent --show-error --fail \
 wait_for_ping 60
 login_admin
 
+removed_exec_response=$(curl --silent --show-error --fail \
+  --cookie "${cookie_jar}" \
+  --header 'Content-Type: application/json' \
+  --data '{"jsonrpc":"2.0","id":1,"method":"admin:exec","params":{"command":"true","clients":["disabled"]}}' \
+  "${server_url}/api/rpc2")
+jq --exit-status '.error.code == -32601' <<<"${removed_exec_response}" >/dev/null
+
+removed_exec_route_status=$(curl --silent --output /dev/null --write-out '%{http_code}' \
+  --cookie "${cookie_jar}" \
+  --header 'Content-Type: application/json' \
+  --data '{"command":"true","clients":["disabled"]}' \
+  "${server_url}/api/admin/task/exec")
+test "${removed_exec_route_status}" = "404"
+
 node_response=$(curl --silent --show-error --fail \
   --cookie "${cookie_jar}" \
   --header 'Content-Type: application/json' \

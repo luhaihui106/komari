@@ -10,8 +10,6 @@ const (
 	MethodAgentReport     = "agent.report"
 	MethodAgentBasicInfo  = "agent.basicInfo"
 	MethodAgentPingResult = "agent.pingResult"
-	MethodAgentTaskResult = "agent.taskResult"
-	MethodAgentExec       = "agent.exec"
 	MethodAgentPing       = "agent.ping"
 	MethodAgentMessage    = "agent.message"
 	MethodAgentEvent      = "agent.event"
@@ -143,22 +141,10 @@ type PingResultParams struct {
 	FinishedAt time.Time `json:"finished_at"`
 }
 
-type TaskResultParams struct {
-	TaskID     string    `json:"task_id"`
-	Result     string    `json:"result"`
-	ExitCode   int       `json:"exit_code"`
-	FinishedAt time.Time `json:"finished_at"`
-}
-
 type PullParams struct {
 	Capabilities []string `json:"capabilities,omitempty"`
 	AckEventIDs  []string `json:"ack_event_ids,omitempty"`
 	LastEventID  string   `json:"last_event_id,omitempty"`
-}
-
-type ExecParams struct {
-	TaskID  string `json:"task_id"`
-	Command string `json:"command"`
 }
 
 type PingParams struct {
