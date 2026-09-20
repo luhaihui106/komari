@@ -69,3 +69,24 @@ jobs:
 
       - name: Verify container command
         run: docker run --rm komari-lightweight:m0 /app/komari --help
+
+      - name: Checkout pinned official Agent
+        uses: actions/checkout@v5
+        with:
+          repository: komari-monitor/komari-agent
+          ref: c7bafb79b1a73ed9e14e2c248ae4d4163e506036
+          path: .ci/komari-agent
+          persist-credentials: false
+
+      - name: Build pinned official Agent
+        working-directory: .ci/komari-agent
+        env:
+          CGO_ENABLED: 0
+          GOOS: linux
+          GOARCH: amd64
+        run: go build -trimpath -o ../../komari-agent-linux-amd64 .
+
+      - name: Verify Agent V2 and Docker persistence
+        env:
+          KOMARI_AGENT_BINARY: ${{ github.workspace }}/komari-agent-linux-amd64
+        run: bash scripts/ci/m0-integration.sh

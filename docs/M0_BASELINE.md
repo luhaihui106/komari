@@ -13,6 +13,7 @@
 | Fork version line | `0.1.0` |
 | Edition | `lightweight-dev` |
 | Go version declared by the module | `1.25.0` |
+| Pinned Agent V2 commit | `c7bafb79b1a73ed9e14e2c248ae4d4163e506036` |
 
 ## 2. Compatibility retained at M0
 
@@ -58,8 +59,15 @@ The `Lightweight Baseline CI` workflow must pass before M1 begins. It performs:
 - statically linked Linux amd64 server build using musl;
 - binary startup/help check;
 - Docker image build;
-- container startup/help check.
+- container startup/help check;
+- first-run installation API completion against a mounted data directory;
+- node token creation through the authenticated admin API;
+- pinned official Agent V2 basic-info and live metric report ingestion;
+- container restart with SQLite persistence and Agent reconnection.
 
 The compatibility frontend is pinned to commit
 `3324844cfa347f18c83435f1ccf5634df7e5b768` only for this gate. The workflow
 does not publish artifacts, releases, packages, or images.
+
+The integration Agent is started with remote control disabled. CI credentials,
+tokens, databases, and logs are ephemeral and are not uploaded as artifacts.
